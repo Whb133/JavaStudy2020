@@ -1,0 +1,30 @@
+java中的对象，正常情况下只能进行比较 == 或 ！= ，不能使用 > 或 < 。
+但是在开发中，我们需要对多个对象进行排序，即需要比较对象的大小。
+如何实现？
+    使用Comparable接口  或者  Comparator接口
+
+Comparable接口：自然排序
+    1.像String、包装类等实现了Comparable接口，并且重写了compareTo(obj)方法，给出了比较两个对象大小的方式。
+    2.像String、包装类等实现了Comparable接口，重写compareTo(obj)方法时，是按照从小到大顺序排列。
+    3.重写compareTo(obj)方法的规则：
+        如果当前对象this 大于 形参 obj，则返回正整数，
+        如果当前对象this 小于 形参 obj，则返回负整数，
+        如果当前对象this 等于 形参 obj，则返回零。
+    4.对于自定义的类，如果需要排序，可以让其实现Comparable接口，重写compareTo()方法，
+        在compareTo()方法中指明如何排序。
+
+
+Comparator接口：定制排序
+    1.背景：
+        当元素类型没有实现Comparable接口而又不方便修改代码，
+        或者实现了Comparable接口但排序规则不适合当前操作，
+        那么可以考虑使用实现Comparator接口的对象来排序。
+    2.重写compare(Object obj1,Object obj2),比较obj1 和 obj2的大小。
+        如果 obj1 大于 obj2，则返回正整数，
+        如果 obj1 小于 obj2，则返回负整数，
+        如果 obj1 等于 obj2，则返回零。
+
+
+Comparable接口 和 Comparator接口 使用对比：
+    Comparable接口一旦确定，保证实现该接口的类的对象可以任意使用，在任何地方都可以比较大小。
+    Comparator接口临时性的比较。

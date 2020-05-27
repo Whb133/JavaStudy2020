@@ -1,0 +1,122 @@
+String:字符串，使用一对""引起来表示
+
+一.String基础
+1.String声明为final的，不可被继承
+2.String实现了Serializable接口，表示字符串是支持序列化的。
+    String实现了Comparable接口，表示Strinf可以比较大小
+    String实现CharSequence接口，
+3.String内部定义了final char[] value用于存储字符串数据
+4.String：代表不可变的字符序列，简称：不可变性。
+    体现：
+    当对字符串重新赋值时，需要重新指定内存区域来再次赋值，不能使用原有的value进行赋值。
+    当对现有的字符串进行连接操作时，需要重新指定内存区域再次赋值，不能使用原有的value进行赋值。
+    当调用String的replace()方法修改指定字符或字符串时，需要重新指定内存区域再次赋值，不能使用原有的value进行赋值。
+5.通过字面量的方式给一个字符串赋值（区别于new），此时的字符串值声明在字符串常量池中。
+6.字符串常量池中是不会存储相同内容（相同序列）的字符串的。
+
+String实例化方式：两种
+1.字面量定义直接赋值
+2.new String（）对象，new + 构造器
+
+二.String拼接
+    1.字符串拼接事实上依然调用StringBuilder（或StringBuffer）实现，然后通过toString()转换为字符串
+    2..常量与常量的拼接结果在常量池中，且常量池中不会存在相同序列的常量。
+          当"+"两端均为编译期确定的字符串常量时，编译器会进行相应的优化，直接将两个字符串常量拼接好
+    3.只要其中一个是变量（引用），结果就在堆中。
+    4.如果拼接的结果调用intern()方法，返回值就在常量池中。
+    5.综上，“+”连接符对于直接相加的字符串常量效率很高，因为在编译期间便确定了它的值，
+        即形如"I"+“love”+“java”; 的字符串相加，在编译期间便被优化成了"Ilovejava"。
+        对于间接相加（即包含字符串引用，且编译期无法确定值的），
+        即形如s1+s2+s3; 效率要比直接相加低，因为在编译器不会对引用变量进行优化。
+
+三.字符串常量池：
+    在Java的内存分配中，总共3种常量池，分别是Class常量池、运行时常量池、字符串常量池(String Pool)。
+
+    字符串的分配和其他对象分配一样，是需要消耗高昂的时间和空间的，而且字符串使用的非常多。
+    JVM为了提高性能和减少内存的开销，在实例化字符串的时候进行了一些优化：使用字符串常量池。
+    每当创建字符串常量时，JVM会首先检查字符串常量池，如果该字符串已经存在常量池中，那么就直接返回常量池中的实例引用。
+    如果字符串不存在常量池中，就会实例化该字符串并且将其放到常量池中。
+    由于String字符串的不可变性，常量池中一定不存在两个相同的字符串。
+1 内存区域
+    在HotSpot VM中字符串常量池是通过一个StringTable类实现的，它是一个Hash表，默认值大小长度是1009；
+    这个StringTable在每个HotSpot VM的实例中只有一份，被所有的类共享；
+    字符串常量由一个一个字符组成，放在了StringTable上。
+    要注意的是，如果放进String Pool的String非常多，就会造成Hash冲突严重，从而导致链表会很长，
+    而链表长了后直接会造成的影响就是当调用String.intern时性能会大幅下降（因为要一个一个找）。
+
+    在JDK6及之前版本，字符串常量池是放在Perm Gen区(也就是方法区)中的，StringTable的长度是固定的1009；
+    在JDK7版本中，字符串常量池被移到了堆中，StringTable的长度可以通过**-XX:StringTableSize=66666**参数指定。
+    至于JDK7为什么把常量池移动到堆上实现，原因可能是由于方法区的内存空间太小且不方便扩展，而堆的内存空间比较大且扩展方便。
+2 存放的内容
+    在JDK6及之前版本中，String Pool里放的都是字符串常量；
+    在JDK7.0中，由于String.intern()发生了改变，因此String Pool中也可以存放放于堆内的字符串对象的引用。
+
+    String s1 = "AB";
+    String s2 = "AB";
+    String s3 = new String("AB");
+    System.out.println(s1 == s2);//true
+    System.out.println(s1 == s3);//false
+    由于常量池中不存在两个相同的对象，所以s1和s2都是指向JVM字符串常量池中的"AB"对象。new关键字一定会产生一个对象，并且这个对象存储在堆中。
+    所以String s3 = new String(“AB”);产生了两个对象：保存在栈中的s3和保存堆中的String对象。
+    NewString.png
+
+    当执行String s1 = "AB"时，JVM首先会去字符串常量池中检查是否存在"AB"对象，
+    如果不存在，则在字符串常量池中创建"AB"对象，并将"AB"对象的地址返回给s1；
+    如果存在，则不创建任何对象，直接将字符串常量池中"AB"对象的地址返回给s1。
+3.位置
+    JDK1.6及之前版本，字符串常量池是放在Perm Gen区(也就是方法区)中。
+    JDK1.7的改动：
+         将String常量池从方法区（Perm(永久代)）移动到了 Java Heap（堆）区。
+    JDK1.8的改动：
+         将String常量池从Java Heap（堆）区又移动到了方法区（Metaspace(元空间)）。
+         此时没有了永久代概念。方法区的实现为元空间。
+
+    说明：方法区
+        方法区（Method Area）和堆(Heap)一样，是各线程共享的内存区域，
+        它用于存储虚拟机加载的：类信息、普通常量、静态变量、编译器编译后的代码等等。
+        虽然JVM规范将方法区描述为堆的一个逻辑部分，但他还有一个别名Non-Heap(非堆)，目的就是和堆分开，区分于堆。
+        对于HotSpot虚拟机。习惯将方法区成为“永久代(Permanent Gen)”,但严格本质上说，两者并不一样，
+        或者说是，使用永久代来实现方法区，永久代是方法区的一个实现。
+        jdk1.7中，已经将位于方法区内的字符串常量池移走，转而放入堆中。
+四. intern方法:
+
+    直接使用双引号声明出来的String对象(字面量)会直接存储在字符串常量池中，
+    使用new创建的String对象，可以使用String提供的intern方法。
+    intern()方法是一个native方法，intern方法会从字符串常量池中查询当前字符串是否存在。
+    如果存在，就直接返回当前字符串；如果不存在,就会将当前字符串放入常量池中，之后再返回池中此对象的引用。
+
+    使用intern后产生的巨大空间节省。
+    使用intern方法后时间上有了一些增长。这是因为程序中每次都是用了 new String() 后，然后又进行 intern 操作的耗时时间。
+
+五. String、StringBuilder和StringBuffer
+    1.继承结构
+        String_StringBuffer_StringBUild.png
+    2.主要区别
+        1）String是不可变字符序列，StringBuilder和StringBuffer是可变字符序列。
+        2）执行速度StringBuilder > StringBuffer > String。
+        3）StringBuilder是非线程安全的，StringBuffer是线程安全的。
+
+
+六.总结
+    StringSplice.java
+
+    String s1 = "AB";
+    String s2 = new String("AB");
+    String s3 = "A";
+    String s4 = "B";
+    String s5 = "A" + "B";
+    String s6 = s3 + s4;
+    System.out.println(s1 == s2);//false
+    System.out.println(s1 == s5);//true
+    System.out.println(s1 == s6);//false
+    System.out.println(s1 == s6.intern());//true
+    System.out.println(s2 == s2.intern());//false
+
+    解析：
+    1）直接使用双引号声明出来的String对象会直接存储在常量池中；
+    2）String对象的intern方法会得到字符串对象在常量池中对应的引用，
+        如果常量池中没有对应的字符串，则该字符串将被添加到常量池中，然后返回常量池中字符串的引用；
+    3） 字符串的+操作其本质是创建了StringBuilder对象进行append操作，
+        然后将拼接后的StringBuilder对象用toString方法处理成String对象，
+        这一点可以用javap -c命令获得class文件对应的JVM字节码指令就可以看出来。
+    newStringMemory.png

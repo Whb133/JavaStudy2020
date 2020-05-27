@@ -1,0 +1,36 @@
+自定义类加载器
+一.从对于java.lang.ClassLoader的loadClass(String name, boolean resolve)方法的解析来看（见ClassLoaderSourc.java），
+    可以得出以下2个结论：
+        1、如果不想打破双亲委派模型，那么只需要重写findClass方法即可
+        2、如果想打破双亲委派模型，那么就重写整个loadClass方法
+    当然，我们自定义的ClassLoader不想打破双亲委派模型，所以自定义的ClassLoader继承自java.lang.ClassLoader并且只重写findClass方法。
+
+二.自定义类加载器步骤：
+    第一步，自定义一个实体类Person.java，我把它编译后的Person.class放在D盘根目录下：
+    第二步，自定义一个类加载器，里面主要是一些IO和NIO的内容，
+        注意一下 defineClass方法可以把二进制流字节组成的文件转换为一个java.lang.Class----只要二进制字节流的内容符合Class文件规范。
+        我们自定义的MyClassLoader继承自java.lang.ClassLoader，就像上面说的，只实现findClass方法：
+    第三步，Class.forName有一个三个参数的重载方法，可以指定类加载器，
+        平时我们使用的Class.forName("XX.XX.XXX")都是使用的系统类加载器Application ClassLoader。写一个测试类：
+
+
+三.ClassLoader.getResourceAsStream(String name)方法作用
+    ClassLoader中的getResourceAsStream(String name)其实是一个挺常见的方法，所以要写一下。
+    这个方法是用来读入指定的资源的输入流，并将该输入流返回给用户用的，资源可以是图像、声音、.properties文件等，
+    资源名称是以"/"分隔的标识资源名称的路径名称。
+    不仅ClassLoader中有getResourceAsStream(String name)方法，Class下也有getResourceAsStream(String name)方法，
+    它们两个方法的区别在于：
+        1、Class的getResourceAsStream(String name)方法，参数不以"/"开头则默认从此类对应的.class文件所在的packge下取资源，
+            以"/"开头则从CLASSPATH下获取
+        2、ClassLoader的getResourceAsStream(String name)方法，默认就是从CLASSPATH下获取资源，参数不可以以"/"开头
+    其实，Class的getResourceAsStream(String name)方法，只是将传入的name进行解析一下而已，
+        最终调用的还是ClassLoader的getResourceAsStream(String name)，看一下Class的getResourceAsStrea(String name)的源代码：
+        (见ClassLoaderSourc.java)
+
+
+四.   .class和getClass()的区别
+    这两个比较像它们二者都可以获取一个唯一的java.lang.Class对象，但是区别在于：
+    Class c = Person.class;
+    Class c = new Person().getClass();
+    1、.class用于类名，getClass()是一个final native的方法，因此用于类实例
+    2、.class在编译期间就确定了一个类的java.lang.Class对象，但是getClass()方法在运行期间确定一个类实例的java.lang.Class对象

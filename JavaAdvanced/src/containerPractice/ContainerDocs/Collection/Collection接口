@@ -1,0 +1,125 @@
+一.集合框架概述：
+    1.集合、数组都是对多个数据进行存储操作的结构，简称Java容器。
+    说明:此时的存储，主要指的是内存层面的存储，不涉及到持久化的存储(. txt,. jpg,.avi,数据库中）
+    2.1 数组在存储多个数据方面的特点:
+        > 一旦初始化以后，其长度就确定了。
+        >数组一旦定义好，其元素的类型也就确定了。我们也就只能操作指定类型的数据了。
+        比如: String[] arr;int[] arr1;Object[] arr2;
+    2.2 数组在存储多个数据方面的缺点:
+        > 一旦初始化以后，其长度不可修改。
+        > 数组中提供的方法非常有限，对于添加、删除、插入数据等操作，非常不便，同时效率不高。
+        > 获取数组中实际元素的个数的需求，数组没有现成的属性或方法可用
+        > 数组存储数据的特点:有序、可重复。对于无序、不可重复的需求，不能满足。
+
+二.集合框架
+    --> Collection接口：单列集合，存储一个一个对象
+        -->List  存储有序的，可重复的数组    （“动态”数组）
+            --> Linkedlist、ArrayList、Vector
+        -->Set   存储无序的，不可重复的数组   （类似于数学意义上的集合）
+            --> HashSet、LinkedHashSet、TreeSet
+    --> Map接口：双列集合，用来存储一对一对的数据（key--value 键值对）
+        （类似于数学意义上的函数y = f(x),一个key对应一个value)
+        --> HashMap、LinkedHashMap、TreeMap、HashTable、Properties
+
+三.Collection接口中的方法
+
+    本例中所有泛型使用Oject类替代
+    //1.将某对象添加进该容器，添加成功返回true，否则返回false。
+    boolean add(Object o);
+        比如往Set里面添加相同元素，后面添加无效,会返回false.
+
+    //2.将某集合所有元素添加进该容器，添加成功返回true，否则返回false。
+    boolean addAll(Collection c);
+        比如往Set里面添加已经存在的单个元素，addAll()会返回false.若本已经存在的元素和未存在的元素一同添加，则会返回ture.
+
+    //3.从此集合中删除所有元素,该对象依然保留。
+    void clear();
+
+    //4.如果此集合包含指定的元素，则返回true。
+    boolean	contains(Object o);
+
+    //5.如果此集合包含指定集合中的所有元素，则返回true。
+    boolean	containsAll(Collection<Object> c);
+
+    //6.比窘两个Collection对象是否相同
+    AbatractSet类中重写，使用containsAll()实现
+    boolean	equals(Object o);
+
+    //如果此集合不包含任何元素，则返回true。
+    boolean	isEmpty();
+
+    //如果存在，则从此集合中删除指定元素的单个实例.
+    boolean	remove(Object o);
+
+    //删除指定集合中也包含的所有此集合元素.
+    boolean	removeAll(Collection<Object> c)
+
+    //返回此集合元素个数
+    int	size();
+
+    //返回对此集合中的元素进行迭代的迭代器。
+    Iterator<E>	iterator();
+
+    //仅保留此集合中包含在指定集合中的元素(取交集).
+    boolean	retainAll(Collection<Object> c);
+
+    //返回一个包含此集合中所有元素的数组。
+    Object[] toArray();
+
+    //返回一个可能与此流作为其源的并行Stream。
+    default Stream<E>	parallelStream();
+
+    //在此集合中的元素上创建拆分器。
+    default Spliterator<E>	spliterator();
+
+四.Iterator的使用
+    ●Iterator对象称为迭代器(设计模式的一-种)， 主要用于遍历Collection集合中的元素。
+    ●GOF给迭代器模式的定义为:提供一种方法访问一个容器(container)对象中各个元素，而又不需暴露该对象的内部细节。
+        迭代器模式，就是为容器而生。
+    ●Collection接口继承了java.lang.lterable接口，该接口有一个iterator()方法，
+        那么所有实现了Collection接口的集合类都有一个iterator()方法，用以返回一个实现了Iterator接口的对象。
+    ●Iterator仅用于遍历集合，Iterator本身并不提供承装对象的能力。如果需要创建Iterator对象，则必须有一个被迭代的集合。
+    ●集合对象每次调用iterator()方法都得到一个全新的迭代器对象，默认游标都在集合的第一个元素之前。
+
+    迭代器Iterator，是一种针对于容器（Container）的设计模式。要遍历集合，推荐使用hasNext()和next().
+    hasNext();//判断是否有下一个元素
+    next();//自动将指针下移，将下移以后集合位置上的元素返回
+    remove();//从基础集合中移除此迭代器返回的最后一个元素(当前指针指向的元素)。
+        每次调用next（）只能调用一次此方法。
+        如果在迭代进行过程中以其他方式（而不是通过调用此方法）修改了基础集合（在迭代过程中，不允许对元数据进行更改），
+        则迭代器的行为是不明确的。报错ConcurrentModificationException。（当不允许对对象进行并发修改的方法被检测到时，可能会引发此异常。）
+    为什么在迭代器中使用迭代器本身remove方法可行，而调用Colletion的remove方法会出错？
+    https://www.cnblogs.com/TestAndDevelp/p/12379062.html
+    迭代器内部三个重要变量，在Itr内部定义了三个int型的变量：cursor、lastRet、expectedModCount。
+    其中cursor表示下一个元素的索引位置，lastRet表示上一个元素的索引位置，expectedModCount表示容器修改次数计数。
+                int cursor;
+                int lastRet = -1;
+                int expectedModCount = modCount;
+    因为两个在底层实现是不一样的，
+        迭代器在最开始直接将两个值等同，在实现remove方法时，
+            实际上也是也是调用ArrayList本身的remove()方法删除lastRet位置元素，
+            然后强制的修改modCount即可(expectedModCount = modCount;).
+            这里比list.remove多的操作是expectedModCount=modCount，这也是在迭代中用iterator.remove()不报错，
+            用list.remove()报错的原因。
+        ArrayList实现remove（）：找到此元素，调用fastRemove(int index)， fastRemove(int index):将modCount++,size--
+            并没有将expectedModCount 和 modCount 值同意，所以在检查集合修改次数时会出现异常。不能并发修改。
+            checkForComodification主要用来判断集合的修改次数是否合法，即用来判断遍历过程中集合是否被修改过。
+            final void checkForComodification() {
+                        if (modCount != expectedModCount)
+                            throw new ConcurrentModificationException();
+                    }
+
+    ●注意:
+    ➢Iterator可以删除集合的元素，但是是遍历过程中调用迭代器对象的remove方法，不是集合对象的remove方法。
+    ➢如果还未调用next()或在上一次调用next方法之后已经调用了remove方法，再调用remove都会报llegalStateException。
+    ➢增强for循环底层使用的也是迭代器
+
+五.集合Collection 中存储的如果是自定义类的对象，需要自定义类重写哪个方法?为什么?
+  equals()方法
+  List: equals()方法.
+  Set: (HashSet、 LinkedHashSet 为例): equals()、 hashCode()
+        (TreeSet为例):   Comparable: compareTo(Object obj)
+                        Comparator: compare(Object o1,0bject o2)
+
+
+

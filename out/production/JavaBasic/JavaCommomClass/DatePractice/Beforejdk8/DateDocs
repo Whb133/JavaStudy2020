@@ -1,0 +1,6 @@
+jdk1.8之前的日期时间API
+
+1.System类：System.currentTimeMillis();
+2.java.util.Date和子类java.sql.Date
+3.java.text.SipmleDateFormat
+4.java.util.Calendar

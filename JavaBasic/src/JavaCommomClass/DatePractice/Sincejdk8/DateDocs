@@ -1,0 +1,18 @@
+jdk1.8新日期时间API
+
+java.util.Date是jdk1.0引入的，他们大多数方法已经被jdk1.1Calendar类很多方法所取代。
+而Calendar和Date都不是最好的，他们所面临的问题：
+    1.可变性：像日期时间这样的类应该是不可改变的。
+    2.偏移性：Date中的年份是从1900年开始算的，月份是从0开始。
+    3.格式化：格式化只有对Date有用，对Calendar则不行。
+    此外他们也不是线程安全的；也不能处理闰秒。
+
+
+jdk1.8中引入了新的API
+    1.java.time  --包含值对象的基础包
+    2.java.time.formatter  --格式化和解析时间和日期
+    3.java.time.chrono  --提供对不同的日历系统的访问
+    4.java.time.temporal  --包含底层框架和扩展特性
+    5.java.time.zone  --包含时区支持的类
+
+Instant  时间戳，相当于一个瞬时概念

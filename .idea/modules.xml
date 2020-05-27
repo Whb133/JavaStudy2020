@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/DesignPattern/DesignPattern.iml" filepath="$PROJECT_DIR$/DesignPattern/DesignPattern.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Java9_10_11/Java9_10_11.iml" filepath="$PROJECT_DIR$/Java9_10_11/Java9_10_11.iml" />
+      <module fileurl="file://$PROJECT_DIR$/JavaAdvanced/JavaAdvanced.iml" filepath="$PROJECT_DIR$/JavaAdvanced/JavaAdvanced.iml" />
+      <module fileurl="file://$PROJECT_DIR$/JavaBasic/JavaBasic.iml" filepath="$PROJECT_DIR$/JavaBasic/JavaBasic.iml" />
+      <module fileurl="file://$PROJECT_DIR$/JavaStudy2020.iml" filepath="$PROJECT_DIR$/JavaStudy2020.iml" />
+      <module fileurl="file://$PROJECT_DIR$/javaweb/javaweb.iml" filepath="$PROJECT_DIR$/javaweb/javaweb.iml" />
+    </modules>
+  </component>
+</project>

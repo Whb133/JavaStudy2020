@@ -1,0 +1,88 @@
+一.网络基础
+    ●计算机网络:
+    把分布在不同地理区域的计算机与专门的外部设备用通信线路互连成一一个规模大、功能强的网络系统，
+    从而使众多的计算机可以方便地互相传递信息、共享硬件、软件、数据信息等资源。
+    ●网络编程的目的:
+    直接或间接地通过网络协议与其它计算机实现数据交换，进行通讯。
+    ●网络编程中有两个主要的问题:
+    ➢如何准确地定位网络上一-台或多台主机;定位主机上的特定的应用
+    ➢找到主机后如何可靠高效地进行数据传输
+
+二.如何实现网络中的主机互相通信
+    ●通信双方地址
+    ➢IP
+    ➢端口号
+    ●一定的规则(即:网络通信协议。有两套参考模型)
+    ➢OSI参考模型:模型过于理想化，未能在因特网上进行广泛推广
+    ➢TCP/IP参考模型(或TCP/IP协议):事实上的国际标准。
+
+三.IP地址: InetAddress类
+    ➢唯一的标识Internet上的计算机(通信实体)
+    ➢本地回环地址(hostAddress): 127.0.0.1 主 机名(hostName): localhost
+    ➢IP地址分类方式1: IPV4 和IPV6
+        IPV4: 4个字节组成，4个0-255。 大概42亿，30亿都在北美，亚洲4亿。2011年初已经用尽。
+            以点分十进制表示，如192.168.0.1
+        IPV6: 128位(16个字节)，写成8个无符号整数，每个整数用四个十六进制位表示，数之间用冒号(: )分开，
+            如: 3ffe:3201:1401:1280:c8ff.fe4d:db39:1984
+    ➢IP地址分类方式2:公网地址(万维网使用)和私有地址(局域网使用)。192.168.开头的就是私有址址，
+    范围即为192.168.0.0--192.168.255.255，专门为组织机构内部使用
+    ➢特点:不易记忆
+
+四.端口号
+    ●端口号标识正在计算机上运行的进程(程序)
+        ➢不同的进程有不同的端口号
+        ➢被规定为一个16位的整数0~65535。
+        ➢端口分类:
+            ➢公认端口: 0~1023。 被预先定义的服务通信占用(如: HTTP占用端口80，FTP 占用端口21，Telnet占用端口23)
+            ➢注册端口: 1024~49151。 分配给用户进程或应用程序。( 如: Tomcat占用端口8080，MySQL 占用端口3306，Oracle占用端 口1521等)。
+            ➢动态/私有端口: 49152~65535.
+    ●端口号与IP地址的组合得出-一个网络套接字: Socket。
+
+五.TCP和UDP
+    ●TCP协议:
+        ➢使用TCP协议前，须先建立TCP连接，形成传输数据通道
+        ➢传输前，采用“三次握手”方式，点对点通信，是可靠的
+        ➢TCP协议进行通信的两个应用进程:客户端、服务端。
+        ➢在连接中可进行大数据量的传输
+        ➢传输完毕，需释放已建立的连接，效率低
+    ●UDP协议:
+        ➢将数据、源、目的封装成数据包，不需要建立连接
+        ➢每个数据报的大小限制在64K内
+        ➢发送不管对方是否准备好，接收方收到也不确认，故是不可靠的
+        ➢可以广播发送.
+        ➢发送数据结束时无需释放资源，开销小，速度快。
+
+
+六.URL
+    ●URL(Uniform Resource Locator):统一资 源定位符，它表示Internet上某一资源的地址。
+    ●它是一种具体的URI，即URL可以用来标识一个资源，而且还指明了如何locate这个资源。
+    ●通过URL我们可以访问Internet上的各种网络资源，比如最常见的www，ftp站点。浏览器通过解析给定的URL可以在网络上查找相应的文件或其他资源。
+    ●URL的基本结构由5部分组成:
+        <传输协议>://<主机名>:<端口号>/<文件名>#片段名?参数列表
+        ➢例如:
+            http://192.168.1.100:8080/helloworld/index.jsp#a?username=shkstart&password=123
+        ➢#片段名:即锚点，例如看小说，直接定位到章节
+        ➢参数列表格式:参数名=参数值&参数名=参数值...
+
+
+    ●为了表示URL，java.net中实现了类URL。我们可以通过下面的构造器来初始化一个URL对象:
+    ➢public URL (String spec):通过- -个表示URL地址的字符串可以构造一一个URL对象。例
+    如: URL url = new URL ("http://www. atguigu.com/");
+    ➢public URL(URL context, String spec):通过基URL和相对URL构造一个URL对象。.
+    例如: URL downloadUrl = new URL(url,“download.html")
+    ➢public URL(String protocol, String host, String file);例如: new URL("http",
+    "www.atguigu.com", "download. html");
+    ➢public URL(String protocol, String host, int port, String fle);例如: URL gamelan = new
+    URL("http", "www.atguigu.com", 80,“download.html");
+    ●URL类的构造器都声明抛出非运行时异常，必须要对这一异常进行处理，通常是用try-catch语句进行捕获。
+
+
+    ●一个URL对象生成后，其属性是不能被改变的，但可以通过它给定的方法来获取这些属性:
+        ➢public String getProtocol( )获取 该URL的协议名
+        ➢public String getHost( )获取该URL的主机名
+        ➢public String getPor( )获取该URL的端口号
+        ➢public String getPath( )获取该URL的文件路径
+        ➢public String getile( )获取该URL的文件名
+        ➢public String getQuery( )获取该URL的查询名
+
+

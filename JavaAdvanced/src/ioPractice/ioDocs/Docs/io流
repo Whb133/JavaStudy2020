@@ -1,0 +1,163 @@
+一.概述
+    ●I/O是Input/Output的缩写， I/O技术是非常实用的技术，用于处理设备之间的数据传输。如读/写文件，网络通讯等。
+    ●Java程序中，对于数据的输入/输出操作以“流(stream)”的方式进行。
+    ●java.io包下提供了各种“流”类和接口，用以获取不同种类的数据，并通过标准的方法输入或输出数据。
+    ●输入input:读取外部数据(磁盘、光盘等存储设备的数据)到程序(内存)中。
+    ●输出output:将程序(内存)数据输出到磁盘、光盘等存储设备中。
+
+二.流的分类
+    ●按操作数据单位不同分为:字节流(8 bit)，字符流(16 bit)
+    ●按数据流的流向不同分为:输入流，输出流
+    ●按流的焦色的不同分为:节点流，处理流
+
+    1. Java的I0流共涉及40多个类，实际上非常规则，都是从如下4个抽象基类派生的。
+    2.由这四个类派生出来的子类名称都是以其父类名作为子类名后缀。
+
+    (抽象基类)      字节流          字符流
+    输入流      InputStream       Reader
+    输出流      OutputStream      Writer
+
+    3.流的体系结构
+    抽象基类           节点流(或文件流)                                 缓冲流(处理流之一)
+    InputStream       FileInputStream(read(byte[] buff))            BufferedInputStream(read(byte[] buff))
+    OutputStream      FileOutputStream(write(byte[] buff,0,len))    BufferedOutputSream(write(byte[] buff,0,len))/flush()
+    Reader            FileReader(read(char[] buff))                 BufferedReader(read(char[] buff)/readLine())
+    Writer            FileWriter(write(char[] buff,0,len))          BufferedWriter(write(char[] buff,0,len))/flush()
+
+    4.字符流字节流的选择
+        1.对于文本文件(. txt,. java,.c,.cpp)，使用字符流处理
+        2.对于非文本文件(. jpg, .mp3, . mp4, .avi, .doc,.ppt,...)，使用字节流处理
+
+    5.流的关闭（close()）
+        要求:先关闭外层的流，再关闭内层的流
+        说明:关闭外层流的同时，内层流也会自动的进行关闭。关于内层流的关闭，我们可以省略.
+
+三.转换流的使用(处理流之二)
+    1.转换流:属于字符流
+        InputStreamReader:将一个字节的输入流转换为字符的输入流
+        //参数2charsetName指明了字符集，具体使用哪个字符集，取决于文件dbcp. txt保存时使用的字符集。如果不指定字符集，则使用系统默认字符集。
+        InputStreamReader isr = new InputStreamReader(fis, charsetName: "UTF-8");
+
+        OutputStreamwriter:将一个字符的输出流转换为字节的输出流
+    2.作用:提供字节流与字符流之间的转换
+    3.解码:字节、字节数组 --->字符数组、字符事
+        编码:字符数组、字符串--->字节字节数组
+    4.字符集
+        ASCII:美国标准信息交换码。用一个字节的7位可以表示。
+        IS08859-1: 拉丁码表。欧洲码表用一个字节的8位表示。
+        GB2312: 中国的中文编码表。最多两个字节编码所有字符。
+        GBK: 中国的中文编码表升级，融合了更多的中文文字符号。最多两个字节编码。
+        Unicode: 国际标准码，融合了目前人类使用的所有字符。为每个字符分配唯一的字符码。所有的文字都用两个字节来表示。
+        UTF-8: 变长的编码方式，可用1-4个字节来表示一个字符。UTF-8中文占用三个字节。
+            面向传输的众多UTF (UCS Transfer Format)标准，UTF8就是每次8个位传输数据，而UTF-16就是每次16个位。
+            这是为传输而设计的编码，并使编码无国界，这样就可以显示全世界上所有文化的字符了。
+            在标准UTF-8编码中:超出基本多语言范围(BMP-Basic Mutilinguall Plane)的字符被编码为4字节格式，
+            但是在修正的UTF-8编码中，他们由代理编码对(surrogatepairs)表示，然后这些代理编码对在序列中分别重新编码。
+            结果标准UTF-8编码中需要4个字节的字符,在修正后的UTF8编码中将需要6个字节。
+
+四.标准输入输出流(处理流之三)
+    ●System.in和System.out分别代表了系统标准的输入和输出设备
+    ●默认输入设备是:键盘，输出设备是:显示器
+    ●System.in的类型是InputStream
+    ●System.out的类型是PrintStream,其是OutputStream的子类FilterOutputStream的子类
+    ●重定向: 通过System类的setIn，setOut方法对默认设备进行改变。
+        ➢public static void setln(InputStream in)
+        ➢public static void setOut(PrintStream out)
+
+五.打印流(处理流之四)
+    ●实现将基本数据类型的数据格式转化为字符串输出
+    ●打印流:PrintStream和PrintWriter
+        ➢提供了一系列重载的print()和println()方法，用于多种数据类型的输出
+        ➢PrintStream和PrintWriter的输 出不会抛出IOException异常
+        ➢PrintStream和PrintWriter有自动flush功能
+        ➢PrintStream|印的所有字符都使用平台的默认字符编码转换为字节。
+    在需要写入字符而不是写入字节的情况下，应该使用PrintWriter类。
+        ➢System.out返回的是PrintStream的实例
+
+
+六.数据流（DatalnputStream、DataOutputStream）(处理流之五)
+    ●为了方便地操作Java语言的基本数据类型和String的数据，可以使用数据流。
+    ●数据流有两个类: (用于读取和写出基本数据类型、String类的数据)
+        ➢DatalnputStream和DataOutputStream
+        ➢分别“套接”在InputStream和OutputStream子类的流上
+    ●DatalnputStream中的方法
+    boolean readBoolean()
+    byte readByte()
+    char readChar()
+    float readFloat()
+    double readDouble()
+    short readShort()
+    long readLong()
+    int readInt()
+    String readUTF()
+    void readFully(byte[] b)
+    ●DataOutputStream中的方法
+    ➢将上述的方法的read改为相应的write即可。
+
+七.对象流(处理流之六)
+    ●ObjectInputStream和ObjectOutputSteam
+        ➢用于存储和读取基本数据类型数据或对象的处理流。它的强大之处就是可以把Java中的对象写入到数据源中，也能把对象从数据源中还原回来。
+    ●序列化:用ObjectOutputStream类保存基本类型数据或对象的机制
+    ●反序列化: 用ObjectlnputStream类读取基本类型数据或对象的机制
+    ●ObjectOutputStream和ObjectInputStream不能序列化static和transient修饰的成员变量。
+
+    对象的序列化
+    ●时象序列化机制允许把内存中的Java对象转换成平台无关的二进制流，从而允许把这种二进制流持久地保存在磁盘上，
+    或通过网络将这种二进制流传输到另一个网络节点。当其它程序获取了这种二进制流，就可以恢复成原来的Java对象。
+    ●序列化的好处在于可将任何实现了Serializable接口的对象转化为字节数据，使其在保存和传输时可被还原。
+    ●序列化是RMI(Remote Method Invoke - 远程方法调用)过程的参数和返回值都必须实现的机制，而RMI是JavaEE的基础。
+    因此序列化机制是JavaEE平台的基础，如果需要让某个对象支持序列化机制，则必须让对象所属的类及其属性是可序列化的，
+    为了让某个类是可序列化的，该类必须实现如下两个接口之一。否则，会抛出NotSerializableException异常
+        ➢Serializable
+        ➢Externalizable
+    ●自定义类需要满足如下的要求，方可序列化
+        1.需要实现接口: Serializable
+        2.当前类提供-一个全局常量: serialVersionUID
+        3.除了当前Person类需要实现Serializable接口之外，还必须保证其内部所有属性也必须是可序列化的。
+         (默认情况下，基本数据类型可序列化)
+        4.ObjectOutputStream和ObjectInputStream不能序列化static和transient修饰的成员变量。
+
+
+    ●凡是实现Serializable接口的类都有一个表示序列化版本标识符的静态变量:private static final long serialVersionUID;
+    ➢serialVersionUID用来表明类的不同版本间的兼容性。简言之，其目的是以序列化对象进行版本控制，有关各版本反序列化时是否兼容。
+    ➢如果类没有显示定义这个静态常量，它的值是Java运行时环境根据类的内部细节自动生成的。
+    若类的实例变量做了修改，serialVersionUID 可能发生变化。故建议，显式声明。
+
+八.RandomAccessFile类
+
+    RandomAccessFile的使用
+    1. RandomAccessFile直接继承于java. Lang. object类，实现了DataInput和Data0utput接口
+    2. RandomAccessFile既可以作为-一个输入流，又 可以作为一个输出流
+    3.如果RandomAccessFile作为输出流时，写出到的文件如果不存在，则在执行过程中自动创建
+        如果写出到的文件存在，则会对原有文件内容进行覆盖。(默认情况下，从最开始位置覆盖)
+    4.可以通过相夫的操作，实现RandomAccessFile"插人”数据的效果
+    5.我们可以用RandomAlccessFile这个类，实现一个多线程断点下载的功能，用过下载工具的朋友们都知道，下载前都会建立两个临时文件，
+        一个是与被下载文件大小相同的空文件，另一个是记录文件指针的位置文件，每次暂停的时候，都会保存上一次的指针，然后断点下载的时候，
+        会继续从上一次的地方下载，从而实现断点下载或上传的功能。
+
+
+    ●RandomAccessFile声明在java.io包下，但直接继承于java.lang.Object类。
+    并且它实现了Datalnput、DataOutput这两个接口，也就意味着这个类既可以读也可以写。
+    ●RandomAccessFile类支持“随机访问”的方式，程序可以直接跳到文件的任意地方来读、写文件
+        ➢支持只访间文件的部分内容
+        ➢可以向已存在的文件后追加内容
+    ●RandomAccessFile对象包含- -个记录指针，用以标示当前读写处的位置。RandomAccessFile类对象可以自由移动记录指针:
+        ➢long getFilePointer():获取文件记录指针的当前位置
+        ➢void seek(long pos):将文件记录指针定位到pos位置
+    ●构造器
+        ➢public RandomAccessFile(File file, String mode)
+        ➢public RandomAccessFile(String name, String mode)
+    ●创建RandomAccessFile类实例需要指定一个mode参数，该参数指定RandomAccessFile的访问模式:
+        ➢r:以只读方式打开
+        ➢rw:打开以便读取和写入
+        ➢rwd:打开以便读取和写入;同步文件内容的更新
+        ➢rws:打并以便读取和写入;同步文件内容和元数据的更新
+    ●如果模式为只读r。则不会创建文件，而是会去读取一个已经存在的文件，如果读取的文件不存在则会出现异常。
+    如果模式为rw读写。如果文件不存在则会去创建文件，如果存在则不会创建。
+
+
+
+
+
+
+

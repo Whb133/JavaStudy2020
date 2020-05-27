@@ -1,0 +1,349 @@
+一.Map概述
+    ----Map:双列数据，存储key-value对的数据 ---类似于高中的函数: y = f(x)
+        ----HashMap:作为Map的主要实现类;线程不安全的，效率高;可以存储null的key和value。
+                   基于hash表的map实现，哈希表的作用是用来保证键的唯一性
+        ----LinkedHashMap:保证在遍历map元素时，可以按照添加的顺序实现遍历。
+            原因:在原有的HashMap底层结构基础上，添加了一对指针，指向前一个和后-个元素。
+            对于频繁的遍历操作，此类执行效率高于HashMap。
+        ----TreeMap:保证按照添加的key-value对进行排序，实现排序遍历。此时考虑key的自然排序或定制排序。底层使用红黑树。
+                    向TreeMap中添加key-value，要求key必须是由同一个类创建的对象
+                    因为要按照key进行排序:自然排序、定制排序
+        ----Hashtable:作为古老的实现类;线程安全的，效率低;不能存储null的key租value
+            ----Properties:常用来处理配置文件。key和value都是String类型
+                     ●Properties类是Hashtable的子类，该对象用于处理属性文件
+                     ●由于属性文件里的key、value都是字符串类型，所以Properties里的key和value都是字符串类型
+                     ●存取数据时，建议使用setProperty(String key, String value)方法和getProperty(String key)方法
+                        Properties pros = new Properties();
+                        pros . load(new FileInputStream( "jdbc . properties"));
+                        String user = pros. getProperty("user");
+                        System . out. println(user);
+
+
+    HashMap的底层: 数组+链表  (jdk7及之前)
+                  数组+链表+红黑树 (jdk 8)
+
+
+二.Map实现类
+    1.HashMap
+        HashMap 线程不安全
+        HashMap 底层使用数组+链表（jdk1.7 是数组+链表，jdk1.8是数组+链表+红黑树）。
+        HashMap 可以存储null键和null值，也可以同时为key-value都为null。
+        HashMap扩容：初始容量为16，当其元素数量超过容量（Entry数组）的75%，会引起扩容操作。
+                数组size会扩大为原来的两倍，且会重新按照hash值寻找位置（rehash），并重新插入。
+                计算index的方法：index = (hash & 0x7FFFFFFF) % tab.length
+        HashMap的初始值还得考虑加载因子：
+            哈希冲突：若干key的hash值按数组大小取模后，如果hash值相同可能落在数组同一位置（同一数组下标上），
+                这些hash值相同的元素会形成一个Entry链表，对key的查找需要遍历Entry链表上每个元素且进行equals（）对比。
+            加载因子：为了降低哈希冲突的概率，默认当HashMap中的键值对达到数组大小的75%时，即会触发扩容。
+                因此，如果预估容量是100，即需要设定100/0.75＝134的数组大小。
+            空间换时间：如果希望加快Key查找的时间，还可以进一步降低加载因子，加大初始大小，以降低哈希冲突的概率。
+
+    2.Hashtable
+        Hashtable线程安全，实现线程安全的方式是在修改数据时对整个Hashtable加锁（唯一锁）。
+        Hashtable底层实现使用数组+链表。
+        Hashtable的key-value都不可以存储null。
+        Hashtable扩容：初始容量为11，扩容为原大小的2倍+1
+
+    3.ConcurrentHashMap:
+        ●底层采用分段的数组+链表实现，线程安全
+        ●通过把整个Map分为N个Segment,可以提供相同的线程安全,但是效率提升N倍，默认提升16倍。(读操作不加锁,于
+        HashEntry的value变量是volatile的，也能保证读取到最新的值。)
+        ●Hashtable的synchronized是针对整张Hash表的， 即每次锁住整张表让线程独占，ConcurrentHashMap允许多个修改操作并
+        发进行，而关键在于使用了锁分离技术
+        ●有些方法需要跨段，比如size()和containsValue(), 它们可能需要锁定整个而而不仅仅是某个段,这需要按顺序锁定所有段,
+        操作完毕后，又按顺序释放所有段的锁
+        ●扩容: 段内扩容. (段内元素超过该段对应Entry数组长度的75%触发扩容,不会对整个Map进行扩容)，插入前检测需不需要扩容,
+        有效避免无效扩容
+
+    4.LinkedHashMap：Entry多了两个指针，一个指向before，一个指向after，能够记录添加的元素的先后顺序
+        static class Entry<K,V> extends HashMap.Node<K,V> {
+            Entry<K,V> before, after;
+            Entry(int hash, K key, V value, Node<K,V> next) {
+                super(hash, key, value, next);
+            }
+        }
+三.HashMap的底层实现原理
+    Map中的key:无序的、不可重复的，使用Set 存储所有的key ---> key所在的类要重写equaLs() hashCode() (以HashMap为例)
+    Map中的value:无序的、可重复的，使用collection存 储所有的value --->vaLue所在的类要重写equals()
+    一个键值对: key-value 构成了一个Entry对象。
+    Map中的entry:无序的、不可重复的，使用set存储所有的entry
+
+    jdk8相较于jdk7在底层实现方面的不同:
+    1. new HashMap():底层没有创建一个长度为16的数组
+    2. jdk 8底层的数组是: Node[], 而非Entry[]
+    3.首次调用put(),方法时，底层创建长度为16的数组
+    4. jdk7底层结构只有:数组+链表。jdk8中底层结构:数组+链表+红黑树。
+        当数组的某一个索引位置上的元素以链表形式存在的数据个数> 8且当前数组的长度> 64时，此时此索引位置上的所有数据改为使用红黑树存储。
+
+    首先HashMap里面实现一个静态内部类Entry，其重要的属性有key, value, next，
+    从属性key,value我们就能很明显的看出来Entry就是HashMap键值对实现的一个基础bean，
+    HashMap的基础就是一个线性数组，这个数组就是Entry[]，Map里面的内容都保存在Entry[]里面。
+        /**
+        * The table, resized as necessary. Length MUST Always be a power of two.
+        */
+    transient Entry[] table;
+
+    // 存储时:
+    int hash = key.hashCode(); // 这个hashCode方法这里不详述,只要理解每个key的hash是一个固定的int值
+    int index = hash % Entry[].length;
+    Entry[index] = value;
+
+    // 取值时:
+    int hash = key.hashCode();
+    int index = hash % Entry[].length;
+    return Entry[index];
+
+    1）put
+
+    疑问：如果两个key通过hash%Entry[].length得到的index相同，会不会有覆盖的危险？
+    　　这里HashMap里面用到链式数据结构的一个概念。上面我们提到过Entry类里面有一个next属性，作用是指向下一个Entry。
+        打个比方， 第一个键值对A进来，通过计算其key的hash得到的index=0，记做:Entry[0] = A。
+        一会后又进来一个键值对B，通过计算其index也等于0，现在怎么办？HashMap会这样做:
+            B.next = A,Entry[0] = B,如果又进来C,index也等于0,那么C.next = B,Entry[0] = C；
+            这样我们发现index=0的地方其实存取了A,B,C三个键值对,他们通过next这个属性链接在一起。
+            也就是说数组中存储的是最后插入的元素。
+
+    public V put(K key, V value) {
+         if (key == null)
+             return putForNullKey(value);
+         int hash = hash(key);
+         int i = indexFor(hash, table.length);
+         // 如果key已经存在，则替换value，并返回旧值
+         for (Entry<K,V> e = table[i]; e != null; e = e.next) {
+             Object k;
+             if (e.hash == hash && ((k = e.key) == key || key.equals(k))) {
+                 V oldValue = e.value;
+                 e.value = value;
+                 e.recordAccess(this);
+                 return oldValue;
+             }
+         }
+
+         modCount++;
+         // key不存在，则插入新的元素
+         addEntry(hash, key, value, i);
+         return null;
+    }
+
+
+    检查容量是否达到阈值threshold
+    void addEntry(int hash, K key, V value, int bucketIndex) {
+        只有当当前容量size>=阈值threshold，并且存储该元素的位置已经存在元素时，才进行扩容。
+        if ((size >= threshold) && (null != table[bucketIndex])) {
+            resize(2 * table.length);
+            hash = (null != key) ? hash(key) : 0;
+            bucketIndex = indexFor(hash, table.length);
+        }
+
+        createEntry(hash, key, value, bucketIndex);
+    }
+    当然HashMap里面也包含一些优化方面的实现，这里也说一下。比如：Entry[]的长度一定后，随着map里面数据的越来越长，
+    这样同一个index的链就会很长，会不会影响性能？HashMap里面设置一个因子，随着map的size越来越大，Entry[]会以一定的规则加长长度。
+
+    2）get
+     public V get(Object key) {
+            if (key == null)
+                return getForNullKey();
+            int hash = hash(key.hashCode());
+            //先定位到数组元素，再遍历该元素处的链表
+            for (Entry<K,V> e = table[indexFor(hash, table.length)];
+                 e != null;
+                 e = e.next) {
+                Object k;
+                if (e.hash == hash && ((k = e.key) == key || key.equals(k)))
+                    return e.value;
+            }
+            return null;
+    }
+
+    3）null key的存取
+    null key总是存放在Entry[]数组的第一个元素。
+
+       private V putForNullKey(V value) {
+            for (Entry<K,V> e = table[0]; e != null; e = e.next) {
+                if (e.key == null) {
+                    V oldValue = e.value;
+                    e.value = value;
+                    e.recordAccess(this);
+                    return oldValue;
+                }
+            }
+            modCount++;
+            addEntry(0, null, value, 0);
+            return null;
+        }
+
+        private V getForNullKey() {
+            for (Entry<K,V> e = table[0]; e != null; e = e.next) {
+                if (e.key == null)
+                    return e.value;
+            }
+            return null;
+        }
+
+    4）确定数组index：hashcode % table.length取模
+    HashMap存取时，都需要计算当前key应该对应Entry[]数组哪个元素，即计算数组下标；算法如下：
+
+       /**
+         * Returns index for hash code h.
+         */
+        static int indexFor(int h, int length) {
+            return h & (length-1);
+        }
+
+    按位取并，作用上相当于取模mod或者取余%。
+    这意味着数组下标相同，并不表示hashCode相同。
+
+    5）table初始大小
+
+      public HashMap(int initialCapacity, float loadFactor) {
+            .....
+            // Find a power of 2 >= initialCapacity
+            int capacity = 1;
+            while (capacity < initialCapacity)
+                capacity <<= 1;
+            this.loadFactor = loadFactor;
+            threshold = (int)(capacity * loadFactor);
+            table = new Entry[capacity];
+            init();
+        }
+    6） 再散列rehash过程
+    当哈希表的容量超过默认容量时，必须调整table的大小。当容量已经达到最大可能值时，那么该方法就将容量调整到Integer.MAX_VALUE返回，
+    这时，需要创建一张新表，将原表的映射到新表中。
+
+       /**
+         * Rehashes the contents of this map into a new array with a
+         * larger capacity.  This method is called automatically when the
+         * number of keys in this map reaches its threshold.
+         *
+         * If current capacity is MAXIMUM_CAPACITY, this method does not
+         * resize the map, but sets threshold to Integer.MAX_VALUE.
+         * This has the effect of preventing future calls.
+         *
+         * @param newCapacity the new capacity, MUST be a power of two;
+         *        must be greater than current capacity unless current
+         *        capacity is MAXIMUM_CAPACITY (in which case value
+         *        is irrelevant).
+         */
+        void resize(int newCapacity) {
+            Entry[] oldTable = table;
+            int oldCapacity = oldTable.length;
+            if (oldCapacity == MAXIMUM_CAPACITY) {
+                threshold = Integer.MAX_VALUE;
+                return;
+            }
+            Entry[] newTable = new Entry[newCapacity];
+            transfer(newTable);
+            table = newTable;
+            threshold = (int)(newCapacity * loadFactor);
+        }
+
+        /**
+         * Transfers all entries from current table to newTable.
+         移动的逻辑也很清晰，遍历原来table中每个位置的链表，并对每个元素进行重新hash，在新的newTable找到归宿，并插入。
+         */
+        void transfer(Entry[] newTable, boolean rehash) {
+            int newCapacity = newTable.length;
+            for (Entry<K,V> e : table) {
+                while(null != e) {
+                    Entry<K,V> next = e.next;
+                    if (rehash) {
+                        e.hash = null == e.key ? 0 : hash(e.key);
+                    }
+                    //i是在newTable中的新hash索引
+                    int i = indexFor(e.hash, newCapacity);
+                    //将newTable中i位置已经存在的Entry<K,V>链表，挂在e上
+                    e.next = newTable[i];
+                    //将e放入newTable[i]链表第一个位置，此时，该位置其他Entry对已经挂在e上
+                    newTable[i] = e;
+                    //循环下一个
+                    e = next;
+                }
+            }
+        }
+四.面试题：
+
+1.HashMap和Hashtable的hash表和hash算法
+    HashMap和Hashtable都是用hash算法来决定其元素的存储，因此HashMap和Hashtable的hash表包含如下属性：
+    ●容量(capacity) : hash表中桶的数量
+    ●初始化容量(initial capacity) :创建hash表时桶的数量，HashMap允许在构造器中指定初始化容量
+    ●尺寸(size) :当前hash表中记录的数量
+    ●负载因子(load factor) :负载因子等于"size/capacity"。 负载因子为0，示空的hash表，0.5表示半满的散列表,依此类推。
+        轻负载的散列表具有冲突少、适宜插入与查询的特点(但是使用Iterator迭代元素时比较慢)
+    除此之外，hash表里还有一个“负载极限”， “负载极限”是一个0 ~ 1的数值,“负载极限”决定了hash表的最大填满程度。
+    当hash表中的负载因子达到指定的“负载极限”时，hash表会自动成倍地增加容量(桶的数量)，并将原有的对象重新分配，放入新的桶内，这称为rehashing。
+    HashMap和Hashtable的构造器允许指定一个负载极限， HashMap和Hashtable默认的“负载极限”为0.75,
+    这表明当该hash表的3/4已经被填满时，hash表会发生rehashing。（见三-6）
+    再散列时可能出现死循环
+        当重新调整HashMap大小的时候，确实存在条件竞争，因为如果两个线程都发现HashMap需要重新调整大小，他们会同时试着调整大小；
+        在调整大小过程中，存储在链表中的元素次序会反过来，因为在第一次拿取元素时候，总是从链表最开始取，然后放入newTable[] 链表的最后，
+        在移动最后一个元素时，将newTable[]位置链表上所有元素悬挂在该最后一个元素上（e.next=newTable[i]）。
+        因为次序相反，所以可能造成死循环。
+    “负载极限”的默认值(0.75) 是时间和空间成本上的一种折中:
+    ●较高的“负载极限”可以降低hash表所占用的内存空间， 但会增加查询数据的时间开销,而查询是最频繁的操作
+    (HashMap的get()与put()方法都要用到查询)
+    ●较低的"负载极限”会提高查询数据的性能，但会增加hash表所占用的内存开销
+
+
+5.HashMap和Hashtable的异同?
+
+    两者都是Map的子类，都是双列数据，存储的都是key-value键值对。
+    HashMap和Hashtable都是用hash算法来决定其元素的存储，因此HashMap和Hashtable的hash表结构相同。
+
+    HashMap：使用最广泛的一个map类（@since JDK1.2），线程不安全的，效率高，key-value中可以存储null值
+    Hashtable：使用最古老的map类（@since JDK1.0）线程安全的，效率低，key-value中不可以存储null值
+
+    Hashtable和HashMap都实现了Map接口，但是Hashtable的实现是基于Dictionary抽象类的。
+    多线程使用不同：HashMap不是线程安全的，在多线程环境中，需要手动实现同步机制。而HashTable是线程安全的
+    继承类不同：HashMap继承的是 AbstractMap，而HashTable继承的是Dictionary 类；
+    键值对存储不同；HashMap的键能有一个为null，而他的值只能有任意多个是null；
+        在HashMap中，null可以作为键，这样的键只有一个，但可以有一个或多个键所对应的值为null。
+        当get()方法返回null值时，即可以表示HashMap中没有该key，也可以表示该key所对应的value为null。
+        因此，在HashMap中不能由get()方法来判断HashMap中是否存在某个key，应该用containsKey()方法来判断。
+        而在Hashtable中，无论是key还是value都不能为null。
+
+    扩容方式是不同：HashMap默认的初始大小是16，装载因子是0.75，并且扩容的大小一定是2的指数；
+                而HashTable的默认初始大小是11，扩容的方式是 2*old+1；
+    哈希值使用不同：HashTable的hash值是直接使用对象中的hashCode方法，
+                    而HashMap则是重新计算对象的HashCode；并且用与代替求模；
+    两个遍历方式的内部实现不同：Hashtable、HashMap都使用了Iterator。而由于历史原因，Hashtable还使用了Enumeration的方式 。
+        HashMap的迭代器（Iterator）是fail-fast迭代器，而Hashtable的enumerator迭代器不是fail-fast的。
+        所以当有其它线程改变了HashMap的结构（增加或者移除元素），将会抛出ConcurrentModificationException，
+        但迭代器本身的remove()方法移除元素则不会抛出ConcurrentModificationException异常。但这并不是一个一定发生的行为，要看JVM。
+
+
+6.ConcurrentHashMap与Hashtable的异同?
+    ConcurrentHashMap（@since JDK1.5）,Hashtable(@since JDK1.0)
+    Hashtable实现线程安全是在修改数据时锁住整个HashTable；
+    CurrentHashMap，是将HashMap分成了很多个段（一般默认是16段），引入了分段锁的概念，然后对每一片加锁，
+        具体可以理解成一把大的Map分解成N个小的HashTable，根据key.hashCode（）来决定放到哪一个片上；
+
+    为什么我们需要ConcurrentHashMap？
+        同步的集合类（Hashtable和Vector），
+        同步的封装类（使用Collections.synchronizedMap()方法和Collections.synchronizedList()方法返回的对象）可以创建出线程安全的Map和List。
+        但是有些因素使得它们不适合高并发的系统。它们仅有单个锁（即对整个集合加锁）。
+
+    我们可以使用ConcurrentHashMap来代替Hashtable吗？
+        我们知道Hashtable是synchronized的，但是ConcurrentHashMap同步性能更好，因为它仅仅根据同步级别对map的一部分进行上锁。
+        ConcurrentHashMap当然可以代替HashTable，但是HashTable提供更强的线程安全性。
+
+7.为什么String, Integer这样的wrapper类（包装类）适合作为键？
+    String, Integer这样的wrapper类作为HashMap的键是再适合不过了，而且String最为常用。
+    因为String是不可变的，也是final的，而且已经重写了equals()和hashCode()方法了。其他的wrapper类也有这个特点。
+    不可变性是必要的，为了要计算hashCode()，就要防止键值改变，如果键值在放入时和获取时返回不同的hashcode的话，那就不能从HashMap中找到想要的对象。
+    不可变性还有其他的优点如线程安全。可以仅仅通过将某个field声明成final就能保证hashCode是不变的。
+    因为获取对象的时候要用到equals()和hashCode()方法，那么键对象正确的重写这两个方法是非常重要的。
+    如果两个不相等的对象返回不同的hashcode的话，那么碰撞的几率就会小些，这样就能提高HashMap的性能。
+
+    我们可以使用自定义的对象作为键吗？
+    这是前一个问题的延伸。当然可能使用任何对象作为键，只要它遵守了equals()和hashCode()方法的定义规则，并且当对象插入到Map中之后将不会再改变了。
+    如果这个自定义对象是不可变的，那么它已经满足了作为键的条件，因为当它创建之后就已经不能改变了。
+
+8.HashMap、HashTable、CurrentHashMap三者效率的比较：
+    由于安全机制的原因，HashMap的效率比HashTable，CurrentHashMap的效率高；
+    但是由于CurrentHashMap加锁的高效性,HashTable是整个加锁，他的效率比HashTable高；
+    总的来说   HashMap>CurrentHashMap>HashTable;
+
+
+
+

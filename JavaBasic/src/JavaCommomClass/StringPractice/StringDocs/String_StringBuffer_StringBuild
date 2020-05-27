@@ -1,0 +1,39 @@
+String、StringBuffer、StringBuilder异同：
+
+String：不可变字符序列，底层使用char[]存储
+StringBuffer：可变字符序列，底层使用char[]存储，线程安全，效率低
+StringBuilder：可变字符序列，底层使用char[]存储，非线程安全，效率低，jdk1.5新增
+
+三者效率：
+    Stringbuilder > StringBuffer > String
+
+源码分析：
+String s1 = new String();   //char[] value = new char[0]
+String s1 = new String("java");   //char[] value = new char[]{'j','a','v','a'};
+
+StringBuffer sb = new StringBuffer();   //char[] value = new char[16];
+    底层创建了一个长度为16的char数组
+sb.append('a');   //value[0] = 'a';
+sb.append('b');   //value[1] = 'b';
+
+StringBuffer sb = new StringBuffer("java");   //char[] value = new char["java".length+16];
+
+
+可能出现的问题：
+    1.System.out,println(sb.length());
+        输出字符串的长度看的是实际数组中已经装了多少（底层count计数），而非value.length.
+    2.因为StringBuffer、StringBuilder是可变字符序列，且初始化时默认容量为16.
+        如果一直append，可能会出现容量不够，需要扩充容量。
+        扩容底层实现：默认将value原来长度左移一位（乘2）再加2；
+                    如果此时容量还不够，就直接将append之后数组的长度直接赋值给newCapacity
+                private int newCapacity(int minCapacity) {
+                        // overflow-conscious code
+                        int newCapacity = (value.length << 1) + 2;
+                        if (newCapacity - minCapacity < 0) {
+                            newCapacity = minCapacity;
+                        }
+                        return (newCapacity <= 0 || MAX_ARRAY_SIZE - newCapacity < 0)
+                            ? hugeCapacity(minCapacity)
+                            : newCapacity;
+                }
+        所以，在开发中建议使用StringBuffer(int Capacity)、StringBuilder(int Capacity)可直接指定容量，免去扩容开销。

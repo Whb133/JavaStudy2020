@@ -1,0 +1,59 @@
+synchronized   和   Lock
+synchronized和Lock都能实现对共享资源的控制。且两者在内存同步上是同样的机制，但是显式锁有更灵活，更强大的接口。
+
+synchronized 隐式锁，又叫同步监视器），是一个JAVA关键字。
+synchronized 既可以是代码块锁，又是方法锁。
+synchronized在执行完相应的同步代码以后，会自动的释放锁。
+synchronized对多个锁只能按照获得锁的顺序反序释放锁。并且申请释放锁的操作只能在一份方法内（方法块无法跨方法）进行。
+synchronized不会产生锁泄漏。
+synchronized是非公平锁。
+synchronized当线程申请不到内部锁的时候会一直阻塞。
+Lock（显式锁）是java.util.concurrent.locks包下的一个接口。
+Lock只有代码块锁。
+Lock加锁和解锁都需要实现手动控制，且显式锁必须手动释放。如果获取锁后由于异常没有释放锁，那么这把锁永远得不到释放。
+Lock可以根据需要任意释放锁，没有顺序约束。并且支持支持在一个方法中申请锁，在另一个方法中释放锁。
+Lock可能会产生锁泄漏。
+Lock可以是公平锁，也可是非公平锁。
+Lock 当线程使用显示锁的tryLock()方法去申请锁时，如果申请不到，不会一直阻塞，可以去干其他的事情。可中断。
+Lock接口提供的方法：
+	void lock()
+	获取锁，且不可中断。即如果该锁不可用，则出于线程调度目的，当前线程将被禁用，并处于休眠状态，直到获得该锁为止。
+
+	boolean tryLock（）
+	仅在调用时释放锁时才获取锁。获取锁（如果有）并立即返回值true。如果锁不可用，则此方法将立即返回值false。(可中断获取锁的方法)
+        Lock lock = new ReentrantLock();
+        if (lock.tryLock()) {
+            try {
+            } finally {
+                lock.unlock();
+            }
+        } else {
+        }
+
+    void LockInterruptibly（）throws InterruptedException
+	除非当前线程被中断，否则获取锁 。
+    获取锁（如果有）并立即返回。
+
+    boolean tryLock(long time,TimeUnit unit) throws InterruptedException
+    如果锁在给定的等待时间内是空闲的，并且当前线程尚未中断，则获取该锁。
+    如果锁可用，则此方法立即返回值true。如果该锁不可用，则出于线程调度目的，当前线程将被禁用，并在发生以下三种情况之一之前处于休眠状态：
+        该锁由当前线程获取；
+        其他一些线程会中断当前线程，并支持中断获取锁。
+        经过指定的等待时间
+
+    void unlock()
+    释放锁。
+
+    Condition newCondition()
+    返回绑定到该 Lock实例的新Condition实例。
+    在等待该条件之前，该锁必须由当前线程持有。调用Condition.await()将自动在等待之前释放该锁，并在等待返回之前重新获取该锁。
+
+锁泄露（针对显式锁）：
+对锁的使用方式都是用同一个套路——先申请锁，再执行临界区中的代码，最后释放锁。
+某执行线程在执行完临界区代码之后并没有释放引导该临界区的锁lock，这种现象（故障）就被称为锁泄漏（Lock Leak）。
+锁泄漏会导致其他线程无法获得其所需的锁，从而使得这些线程都无法完成其任务。
+锁泄漏的规避方法：只需要将锁的释放放在一个try-finally语句的finally块中就可以规避锁泄漏。
+
+
+优先使用顺序：
+lock--->同步代码块（已经进入了方法体，分配了相应资源）--->同步方法（在方法体之外）
