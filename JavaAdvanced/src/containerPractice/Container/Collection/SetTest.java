@@ -2,7 +2,7 @@ package containerPractice.Container.Collection;
 
 import java.util.*;
 
-public class Test {
+public class SetTest {
 
     public static void main(String[] args) {
 
