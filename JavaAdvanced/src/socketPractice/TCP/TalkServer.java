@@ -24,7 +24,7 @@ public class TalkServer {
             serverbr = new BufferedReader(new InputStreamReader(s.getInputStream()));
             serverpw = new PrintWriter(new OutputStreamWriter(s.getOutputStream()));
             String clientwords = null;
-            while (! (clientwords=serverbr.readLine()).equalsIgnoreCase("end")){
+            while (! "end".equalsIgnoreCase((clientwords=serverbr.readLine()))){
                 System.out.println(clientwords);
                 String sysin = null;
                 if (serverin.hasNext()){

@@ -38,7 +38,7 @@ class CSend implements Runnable {
                 br = new BufferedReader(new InputStreamReader(System.in));
                 pw = new PrintWriter(s.getOutputStream(), true);
                 cwords = br.readLine();
-                if (!cwords .equalsIgnoreCase("bye")){
+                if (! "bye".equalsIgnoreCase(cwords)){
                     pw.println("Client:"+cwords);
                 }else {
                     pw.println("Server:" + cwords);
@@ -81,7 +81,7 @@ class CReceive implements Runnable {
             while (flag) {
                 br = new BufferedReader(new InputStreamReader(s.getInputStream()));
                 cwords = br.readLine();
-                if (!cwords .equalsIgnoreCase("bye")) {
+                if (! "bye".equalsIgnoreCase(cwords)) {
                     System.out.println(cwords);
                 }else {
                     flag = false;

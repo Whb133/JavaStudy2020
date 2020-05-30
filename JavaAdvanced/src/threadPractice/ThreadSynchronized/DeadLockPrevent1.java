@@ -6,6 +6,7 @@ public class DeadLockPrevent1 implements Runnable {
     static Object o1 = new Object();
     static Object o2 = new Object();
 
+    @Override
     public void run(){
         if (flag == 1){
             synchronized (o1){

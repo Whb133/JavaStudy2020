@@ -15,7 +15,7 @@ public class PrintStreamTest3 {
             ps = new PrintStream(fos);
 
             while ((s = br.readLine()) != null){
-                if(!s.equalsIgnoreCase("exit")){
+                if(!"exit".equalsIgnoreCase(s)){
                     System.out.println(s.toUpperCase());
                     ps.println("---"+s+"---");
                 }else {

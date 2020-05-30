@@ -17,6 +17,7 @@ public class ReadEmail {
         }
 //        Pattern p = Pattern.compile("(\\._*\\.)*@\\.*.\\.");
 //        Pattern p = Pattern.compile("^[A-Za-z0-9\u4e00-\u9fa5]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$");
+        @SuppressWarnings("AlibabaAvoidPatternCompileInMethod")
         Pattern p = Pattern.compile("[\\w[.-]]+@[\\w[.-]]+\\.[\\w[.-]]+");
         String str = null;
         try {

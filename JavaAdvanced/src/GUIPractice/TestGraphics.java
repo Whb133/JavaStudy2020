@@ -15,6 +15,7 @@ class GraphFrame extends Frame{
         setVisible(true);
     }
 
+    @Override
     public void paint(Graphics g){
         g.drawRect(400,300,30,40);
         g.drawRoundRect(800,900,50,50,40,40);

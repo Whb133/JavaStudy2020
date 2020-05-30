@@ -23,16 +23,20 @@ public class TestOverride {
 }
 class To extends TestOverride{
 
+    @Override
     public void eat(){
         System.out.println("to eat");
     }
+    @Override
     public void sleep() throws InterruptedIOException {
         System.out.println("to sleep");
         throw new InterruptedIOException();
     }
+    @Override
     int study(){
         return 10;
     }
+    @Override
     public void run(){
 
     }

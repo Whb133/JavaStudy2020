@@ -8,6 +8,7 @@ class Supclass{
     Supclass(int n){
         System.out.println(n);
     }
+    @Override
     public String toString(){
         return "";
     }

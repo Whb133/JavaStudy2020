@@ -39,10 +39,12 @@ public class Employee extends People<String> implements Comparable,MyInterface{
         System.out.println(str+" MY name is " + name + " ,MY age is " + age);
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }

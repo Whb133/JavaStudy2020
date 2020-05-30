@@ -3,8 +3,8 @@ package javacharcter;
 public class TestPolymor {
     public static void main(String[] args) {
         //Animalp animal = new Animalp("anim",12);
-        Animalp dog1 = new Dogp("hi",1,"b");
-        Animalp cat1 = new Catp("hu",2,"r");
+        AbstractAnimalp dog1 = new Dogp("hi",1,"b");
+        AbstractAnimalp cat1 = new Catp("hu",2,"r");
         //animal.enjoy();
         dog1.enjoy();
         cat1.enjoy();
@@ -23,18 +23,18 @@ class Animalp{
     }
 }
  */
-abstract class Animalp {
+abstract class AbstractAnimalp {
     String name;
     int age;
 
-    Animalp(String name, int age) {
+    AbstractAnimalp(String name, int age) {
         this.name = name;
         this.age = age;
     }
 
     public abstract void enjoy();
 }
-class Dogp extends Animalp{
+class Dogp extends AbstractAnimalp{
 
     String toothcolor;
 
@@ -43,11 +43,12 @@ class Dogp extends Animalp{
         this.toothcolor = toothcolor;
     }
 
+    @Override
     public void enjoy() {
         System.out.println("dog");;
     }
 }
-class Catp extends Animalp{
+class Catp extends AbstractAnimalp{
 
     String nosecolor;
 
@@ -55,6 +56,7 @@ class Catp extends Animalp{
         super(name,age);
         this.nosecolor = nosecolor;
     }
+    @Override
     public void enjoy() {
         System.out.println("cat");;
     }

@@ -1,0 +1,55 @@
+一.概述
+    单例模式（Singleton Pattern）是 Java 中最简单的设计模式之一。是一种创建型设计模式。
+        他的定义为：保证一个类仅有一个实例，并提供一个访问它的全局访问点。
+        单例模式一般体现在类声明中，单例的类负责创建自己的对象，同时确保只有单个对象被创建。
+        这个类提供了一种访问其唯一的对象的方式，可以直接访问，不需要实例化该类的对象。
+        但是其实，单例并不是完完全全安全的，也是有可能被破坏的。
+    单例模式其实是对外隐藏了构造函数，保证用户无法主动创建对象。但是实际上我们是有办法可以破坏他的。
+二.两种破坏单例模式的方法
+    1.反射
+        通过发射的方式即可获取到一个新的单例对象，这就破坏了单例。
+        避免办法：
+        在构造函数中增加如下代码：
+            private SinglePatternehan(){
+                    if (sp != null){
+                        throw new RuntimeException("Private Constructor external called...");
+                    }
+            }
+        这样，在通过反射调用构造方法的时候，就会抛出异常：
+            Caused by: java.lang.RuntimeException: Private Constructor external called...
+
+    2.序列化
+        通过先序列化再反序列化的方式，可获取到一个新的单例对象，这就破坏了单例。
+        因为在对象反序列化的过程中，序列化会通过反射调用无参数的构造方法创建一个新的对象，所以，通过反序列化也能破坏单例。
+        避免办法：
+        只需要在Sinleton中增加readResolve方法，并在该方法中指定要返回的对象的生成策略几可以了。
+            即序列化在SinglePatternehan类中增加以下代码即可：
+            private Object readResolve() {
+                return getSingleton();
+            }
+        为什么增加readResolve()就可以解决序列化破坏单例的问题了呢？
+            因为反序列化过程中，在反序列化执行过程中会执行到ObjectInputStream#readOrdinaryObject方法，
+            这个方法会判断对象是否包含readResolve方法，如果包含的话会直接调用这个方法获得对象实例。
+                if (obj != null && handles.LookupException(passHandle) == null &&
+                    desc.hasReadResolveMethod())
+                {
+                    Object rep = desc.invokeReadResolve(obj)
+                    if (unshared && rep.getClass().isArray()) {
+                        rep = cloneArray(rep);
+                    }
+                    if (rep != obj) {
+                        // Filter the replacement object
+                        if (rep != nuLl) {
+                            if (rep.getClass().isArray()) {
+                                filterCheck( rep.getClass(), Array.getLength(rep));
+                            else {
+                                filterCheck( rep.getClass(), -1);
+                            }
+                        handles.setObject(passHandle, obj = rep);
+                    }
+                }
+        那如果没有readResolve()方法的话，反序列化的时候会怎么创建对象呢？
+            当然也是反射咯。
+        那前面不是说使用反射的情况，直接在构造函数抛异常不就行了吗？
+            这个我还真试过，其实是不行的，反序列化使用的反射构造器和我们代码中使用反射的构造器不是同一个，
+            反序列化用到的构造器并不会调用到我们对象中的构造函数。

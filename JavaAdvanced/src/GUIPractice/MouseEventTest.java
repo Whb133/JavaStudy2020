@@ -22,6 +22,7 @@ class MouseFrame extends Frame{
     void addpoint(Point p){
         points.add(p);
     }
+    @Override
     public void paint(Graphics g){
         Iterator iterator = points.iterator();
         while (iterator.hasNext()){
@@ -32,6 +33,7 @@ class MouseFrame extends Frame{
     }
 }
 class MListen extends MouseAdapter{
+    @Override
     public void mousePressed(MouseEvent e){
         MouseFrame mf = (MouseFrame) e.getSource();
         mf.addpoint(new Point(e.getX(),e.getY()));

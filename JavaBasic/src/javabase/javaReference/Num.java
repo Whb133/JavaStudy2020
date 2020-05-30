@@ -22,10 +22,10 @@ public class Num {
         PrintStream ps =new PrintStream(System.out){
             @Override
             public void println(String str) {
-                if (str.equals("a=10")){
+                if ("a=10".equals(str)){
                     print("a=100");
                     println();
-                }else if (str.equals("b=10")){
+                }else if ("b=10".equals(str)){
                     print("b=200");
                     println();
                 }

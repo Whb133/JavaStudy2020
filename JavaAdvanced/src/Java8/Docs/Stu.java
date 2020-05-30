@@ -41,8 +41,12 @@ public class Stu {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Stu stu = (Stu) o;
         return age == stu.age &&
                 Objects.equals(name, stu.name);

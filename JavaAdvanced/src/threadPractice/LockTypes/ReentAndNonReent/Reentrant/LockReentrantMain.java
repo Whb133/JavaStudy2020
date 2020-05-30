@@ -96,8 +96,8 @@ class LockR2 implements Runnable {
 //        }
 
 
+        lock.lock();
         try {
-            lock.lock();
             num++;
             System.out.println(Thread.currentThread().getName() + " add : " + num);
             inc();
@@ -119,8 +119,8 @@ class LockR2 implements Runnable {
 //            System.out.println(Thread.currentThread().getName() + "尝试获取锁失败");
 //        }
 
+        lock.lock();
         try {
-            lock.lock();
             num--;
             System.out.println(Thread.currentThread().getName() + " inc : " + num);
         } finally {

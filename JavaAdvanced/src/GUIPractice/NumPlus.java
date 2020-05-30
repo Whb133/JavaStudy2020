@@ -35,6 +35,7 @@ class PlusActionListener implements ActionListener{
     PlusActionListener(PlusFrame pf){
         this.pf = pf;
     }
+    @Override
     public void actionPerformed(ActionEvent e){
         pf.num3.setText(Integer.parseInt(pf.num1.getText())+Integer.parseInt(pf.num2.getText())+"");
     }

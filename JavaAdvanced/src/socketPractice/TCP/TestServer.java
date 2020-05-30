@@ -34,6 +34,7 @@ class SSend implements Runnable {
         this.s = s;
     }
 
+    @Override
     public void run() {
         BufferedReader br;
         PrintWriter pw;
@@ -44,7 +45,7 @@ class SSend implements Runnable {
                 br = new BufferedReader(new InputStreamReader(System.in));
                 pw = new PrintWriter(new OutputStreamWriter(s.getOutputStream()));
                 swords = br.readLine();
-                if (!swords .equalsIgnoreCase("bye")) {
+                if (!"bye" .equalsIgnoreCase(swords)) {
                     pw.println("Server:" + swords);
                     pw.flush();
                 }else {
@@ -60,8 +61,9 @@ class SSend implements Runnable {
             e.printStackTrace();
         } finally {
             try {
-                if (s != null)
+                if (s != null) {
                     s.close();
+                }
             } catch (IOException e) {
                 System.out.println("链接关闭异常！");
                 e.printStackTrace();
@@ -87,7 +89,7 @@ class SReceive implements Runnable {
             while (flag) {
                 br = new BufferedReader(new InputStreamReader(s.getInputStream()));
                 swords = br.readLine();
-                if (!swords .equalsIgnoreCase("bye")) {
+                if (!"bye" .equalsIgnoreCase(swords)) {
                     System.out.println(swords);
                 }else {
                     flag = false;

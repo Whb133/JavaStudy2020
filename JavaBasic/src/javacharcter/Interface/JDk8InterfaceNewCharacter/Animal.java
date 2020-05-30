@@ -48,10 +48,12 @@ class Bird extends Animal implements Flyable,Living{
     }
 
 
+    @Override
     public void eat() {
         System.out.println("Bird eating");
     }
 
+    @Override
     public void sleep() {
         System.out.println("Bird sleeping");
     }

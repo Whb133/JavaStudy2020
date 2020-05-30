@@ -11,7 +11,7 @@ public class InputStreamReaderTest {
             BufferedReader br = new BufferedReader(isr);
             String s = br.readLine();
             while (s != null) {
-                if (!s.equalsIgnoreCase("exit")) {
+                if (!"exit".equalsIgnoreCase(s)) {
                     System.out.println(s.toUpperCase());
                 } else {
                     break;

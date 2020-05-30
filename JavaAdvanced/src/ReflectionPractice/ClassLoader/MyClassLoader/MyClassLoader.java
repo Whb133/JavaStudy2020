@@ -19,6 +19,7 @@ public class MyClassLoader extends ClassLoader {
         super(parent);
     }
 
+    @Override
     protected Class<?> findClass(String name) throws ClassNotFoundException {
         File file = getClassFile(name);
         try {
@@ -47,8 +48,9 @@ public class MyClassLoader extends ClassLoader {
 
         while (true) {
             int i = fc.read(by);
-            if (i == 0 || i == -1)
+            if (i == 0 || i == -1) {
                 break;
+            }
             by.flip();
             wbc.write(by);
             by.clear();

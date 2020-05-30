@@ -66,6 +66,7 @@ class Producert implements Runnable {
         this.stacklongzi = stacklongzi;
     }
 
+    @Override
     public void run() {
         for (int i = 0; i < 30; i++) {
             stacklongzi.add();
@@ -81,6 +82,7 @@ class Consumert implements Runnable {
         this.stacklongzi = stacklongzi;
     }
 
+    @Override
     public void run() {
         for (int i = 0; i < 30; i++) {
             stacklongzi.remove();

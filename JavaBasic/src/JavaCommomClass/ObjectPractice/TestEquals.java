@@ -16,6 +16,7 @@ class Cat{
         this.color = a;
         this.weight  = b;
     }
+    @Override
     public boolean equals(Object obj) {
         if (obj != null) {
             Cat c = (Cat) obj;

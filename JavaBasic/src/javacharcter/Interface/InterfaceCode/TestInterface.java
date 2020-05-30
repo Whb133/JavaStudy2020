@@ -16,17 +16,21 @@ class Studt implements Singer,Painter{
     Studt(String name){
         this.name = name;
     }
+    @Override
     public void sing(){
         System.out.println("singing");
     }
+    @Override
     public void eat(){
         System.out.println("eating");
     }
 
+    @Override
     public void paint() {
         System.out.println("painting");
     }
 
+    @Override
     public void sleep() {
         System.out.println("sleeping");
     }

@@ -40,7 +40,7 @@ public class StreamCreate {
     //创建Stream方式二:通过数组
     static void test2(){
 
-        int arr[] = new int[]{1,2,3,4,5};
+        int[] arr = new int[]{1,2,3,4,5};
         //调用Arrays类的static <T> Stream<T> stream(T[] array):返回一个流
         IntStream intstream = Arrays.stream(arr);
         Stu[] stus = new Stu[]{new Stu("tom"),new Stu("jry")};

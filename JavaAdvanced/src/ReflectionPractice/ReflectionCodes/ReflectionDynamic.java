@@ -18,6 +18,7 @@ public class ReflectionDynamic {
             case 2:
                 classpath = "java.util.Date";
                 break;
+            default:;
         }
         Object instance = null;
         try {

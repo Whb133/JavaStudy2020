@@ -27,6 +27,7 @@ class Person{
         this.name = name;
         this.age = age;
     }
+    @Override
     public boolean equals(Object obj){
         if(obj != null){
             if(obj instanceof Person){
@@ -46,6 +47,7 @@ class Student extends Person{
         super(name,age);
         this.school = school;
     }
+    @Override
     public boolean equals(Object obj){
         if(obj != null){
             if(obj instanceof Person){

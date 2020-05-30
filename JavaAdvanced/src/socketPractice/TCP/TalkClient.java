@@ -19,7 +19,7 @@ public class TalkClient {
             clientpw.flush();
             String serverwords = null;
             String sysin =null;
-            while (! (serverwords=clientbr.readLine()).equalsIgnoreCase("end")){
+            while (! "end".equalsIgnoreCase((serverwords=clientbr.readLine()))){
                 System.out.println(serverwords);
                 if (clientin.hasNext()){
                     sysin = clientin.nextLine();
