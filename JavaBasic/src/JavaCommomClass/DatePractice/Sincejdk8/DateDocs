@@ -21,4 +21,19 @@ Java 8 中的 LocalDate 用于表示当天日期。
     和 java.util.Date不同，它只有日期，不包含时间。当你仅需要表示日期时就用这个类。
 处理特定日期
     通过静态工厂方法now()可以容易地创建当天日期。
-    还可以调用另一个有用的工厂方法 LocalDate.of() 创建任意日期， 该方法需要传入年、月、日做参数，返回对应的LocalDate实例。
+    还可以调用另一个有用的工厂方法 LocalDate.of() 创建任意日期，
+     该方法需要传入年、月、日做参数，返回对应的LocalDate实例。
+
+time包中的Period类 、 Duration类 和 ChronoUnit类
+Period类
+    Period类表示一段时间的年、月、日，开使用between()方法获取两个日期之间的差作为Period 对象返回；
+Duration类
+    Duration类表示秒或纳秒时间间隔，适合处理较短的时间，需要更高的精确性。我们能使用between()方法比较两个瞬间的差；
+ChronoUnit类
+    ChronoUnit类可用于在单个时间单位内测量一段时间，例如天数或秒。
+举例：计算两个日期之间的差值
+    LocalDate d1 = LocalDate.of(2000,1,1);
+    LocalDate d2 = LocalDate.of(2020,6,13);
+    Period p1 = Period.between(d1,d2);//P20Y5M12D
+
+    long betweenDays = ChronoUnit.DAYS.between(d1, d2);//7469

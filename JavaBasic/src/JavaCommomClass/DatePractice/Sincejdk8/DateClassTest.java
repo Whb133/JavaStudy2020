@@ -1,6 +1,7 @@
 package JavaCommomClass.DatePractice.Sincejdk8;
 
 import java.time.*;
+import java.time.temporal.ChronoUnit;
 
 /**
  * @author whb
@@ -13,7 +14,8 @@ public class DateClassTest {
         //testLocalDateOf();
         //testisAfter();
         //testLeepYear();
-        testPeriod();
+        //testPeriod();
+        testChronoUnit();
 
     }
     public static void testLocalDateNow(){
@@ -50,5 +52,17 @@ public class DateClassTest {
         LocalDate bi = LocalDate.of(1997, 10, 22);
         Period beweenDays = Period.between(bi, now);
         System.out.println(beweenDays);
+
+        LocalDate d1 = LocalDate.of(2000, 1, 1);
+        LocalDate d2 = LocalDate.of(2020, 6, 13);
+        Period p1 = Period.between(d1,d2);//P20Y5M12D
+        System.out.println(p1.getDays());//3
+        System.out.println(p1);
+    }
+    public static void testChronoUnit(){
+        LocalDate d1 = LocalDate.of(2000, 1, 1);
+        LocalDate d2 = LocalDate.of(2020, 6, 13);
+        long betweenDays = ChronoUnit.DAYS.between(d1, d2);
+        System.out.println(betweenDays);//7469
     }
 }
